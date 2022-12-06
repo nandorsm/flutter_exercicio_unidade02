@@ -11,7 +11,6 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final tarefa = TextEditingController();
-  bool? _checked = false;
 
   // listaDeTarefas() {
   //   return FutureBuilder(
@@ -76,10 +75,10 @@ class _MainScreenState extends State<MainScreen> {
                             title: Text("${tarefas[i].nome}"),
                             secondary: Icon(Icons.bookmark_outline),
                             controlAffinity: ListTileControlAffinity.platform,
-                            value: _checked,
+                            value: tarefas[i].checked,
                             onChanged: (value){
                               setState(() {
-                                _checked = value;
+                                tarefas[i].checked = !tarefas[i].checked;
                                 
                               });
                             },
