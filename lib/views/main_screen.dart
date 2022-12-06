@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:thiago_exercicio_unidade02/model/tarefa.dart';
 import '../database/database.dart';
 
-
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -11,65 +10,29 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-
   final tarefa = TextEditingController();
+  bool? _checked = false;
 
-  //List<String> tarefas = [];
-
-  
-
-
-  // buildListView() {
-  //   final tarefas = List<Tarefa>;
-  //   return ListView(
-  //     itemCount : tarefas.length;
-  //     tarefasBuilder: (context, index){
-  //       return ListTile(
-  //         title: Text('${tarefas[index]}'),
-  //       )
-  //     },
-  //   );
-  //   }
+  // listaDeTarefas() {
+  //   return FutureBuilder(
+  //       future: Future.delayed(Duration(seconds: 5)).then((value) => findAll()),
+  //       builder: (context, snapshot) {
+  //         if (snapshot.hasData) {
+  //           List<Tarefa> tarefas = snapshot.data as List<Tarefa>;
+  //           return ListView.builder(
+  //               itemCount: tarefas.length,
+  //               itemBuilder: (context, i) {
+  //                 return Card(
+  //                   child: Text("${tarefas[i].nome}"),
+  //                 );
+  //               });
+  //         } else if (snapshot.hasError) {
+  //           return Text("Error");
+  //         } else {
+  //           return CircularProgressIndicator();
+  //         }
+  //       });
   // }
-
-
-  // listaTarefas(){
-  //   return ListView.builder(
-  //     itemCount: tarefas.length, //lenBugado
-  //     itemBuilder: (context, index){
-  //        return ListTile(
-  //         title: Text('${tarefas[index]}'),
-  //        );
-  //     }
-  //   );
-  // }
-
-  listaDeTarefas() {
-    return FutureBuilder(
-              future: Future.delayed(Duration(seconds: 5)).then((value) => findAll()),
-              builder: (context, snapshot) {
-                if(snapshot.hasData){
-                  List<Tarefa> tarefas = snapshot.data as List<Tarefa>;
-                  return ListView.builder(
-                      itemCount: tarefas.length,
-                      itemBuilder: (context,i){
-                        return Card(
-                          child: Text("${tarefas[i].nome}"),
-                        );
-                      }
-                  );
-                }else if(snapshot.hasError){
-                  return Text("Error");
-                }else{
-                    return CircularProgressIndicator();
-                }
-              }
-            );
-  }
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -77,57 +40,62 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         title: Text('Tarefas App'),
       ),
-      body:Container(
+      body: Container(
         child: Column(
           children: [
             TextField(
               controller: tarefa,
               decoration: InputDecoration(
-                icon: Icon(Icons.bookmark_outline),
+                icon: Icon(Icons.bookmark_add),
                 labelText: 'Tarefa',
               ),
             ),
-
             Container(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: (){
-                  setState(() {
-                    insert(Tarefa(tarefa.text));
-                    //tarefas = findAll();
-                    //listaDeTarefas();
-                  });
-                },
-                child: Text('Cadastrar')),
+                  onPressed: () {
+                    setState(() {
+                      insert(Tarefa(tarefa.text));
+                      //tarefas = findAll();
+                      //listaDeTarefas();
+                    });
+                  },
+                  child: Text('Cadastrar')),
             ),
-            
-            // Container(
-            //   child: listaDeTarefas(),
-            // ),
+            FutureBuilder(
+                future: Future.delayed(Duration(seconds: 2))
+                    .then((value) => findAll()),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<Tarefa> tarefas = snapshot.data as List<Tarefa>;
+                    return Expanded(
+                      child: ListView.builder(
+                        itemCount: tarefas.length,
+                        itemBuilder: (context, i) {
+                          return CheckboxListTile(
+                            title: Text("${tarefas[i].nome}"),
+                            secondary: Icon(Icons.bookmark_outline),
+                            controlAffinity: ListTileControlAffinity.platform,
+                            value: _checked,
+                            onChanged: (value){
+                              setState(() {
+                                _checked = value;
+                                
+                              });
+                            },
+                            activeColor: Colors.green,
+                            checkColor: Colors.black,
+                          );
+                        })
+                    );
+                    
 
-            
-            // FutureBuilder(
-            //   future: findAll(),
-            //   builder: (context, AsyncSnapshot snapshot) {
-            //     if (snapshot.hasData) {
-            //       return Container(
-            //         child: ListView.builder(
-            //           itemCount: snapshot.data.length,
-            //           scrollDirection: Axis.horizontal,
-            //           itemBuilder: (BuildContext context, int index) {
-            //             return ListTile(
-            //               title: Text(snapshot.data[index].nome),
-            //             );
-            //           }));
-            //     } else {
-            //       return Center(child: CircularProgressIndicator());
-                  
-            //     }
-            //   }),
-            
-            // listaTarefas()
-
-
+                  } else if (snapshot.hasError) {
+                    return Text("Error");
+                  } else {
+                    return CircularProgressIndicator();
+                  }
+                }),
           ],
         ),
       ),
