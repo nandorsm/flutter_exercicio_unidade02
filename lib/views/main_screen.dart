@@ -11,6 +11,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final tarefa = TextEditingController();
+  bool? _checked = false;
 
   // listaDeTarefas() {
   //   return FutureBuilder(
@@ -62,8 +63,7 @@ class _MainScreenState extends State<MainScreen> {
                   child: Text('Cadastrar')),
             ),
             FutureBuilder(
-                future: Future.delayed(Duration(seconds: 2))
-                    .then((value) => findAll()),
+                future: findAll(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     List<Tarefa> tarefas = snapshot.data as List<Tarefa>;
@@ -78,8 +78,9 @@ class _MainScreenState extends State<MainScreen> {
                             value: tarefas[i].checked,
                             onChanged: (value){
                               setState(() {
-                                tarefas[i].checked = !tarefas[i].checked;
-                                
+                                tarefas[i].checked = value!;
+                                update(tarefas[i]);
+                                print(tarefas[i].checked);
                               });
                             },
                             activeColor: Colors.green,
@@ -90,7 +91,7 @@ class _MainScreenState extends State<MainScreen> {
                     
 
                   } else if (snapshot.hasError) {
-                    return Text("Error");
+                    return Text("Error: ${snapshot.error}");
                   } else {
                     return CircularProgressIndicator();
                   }

@@ -5,7 +5,7 @@ import '../model/tarefa.dart';
 
 Future<Database> getDatabase(){
   return getDatabasesPath().then((dbPath){
-    final String path = join(dbPath, "tarefas25.db");
+    final String path = join(dbPath, "tarefas30.db");
     return openDatabase(path, onCreate: (db, version) {
       db.execute("CREATE TABLE tarefas("
         "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -18,8 +18,17 @@ Future<int> insert(Tarefa tarefa){
   return getDatabase().then((db){
     Map<String, dynamic> values = Map();
     values['nome'] = tarefa.nome;
-    values['checked'] = tarefa.checked.toString();
+    values['checked'] = tarefa.checked == true ? "true" : "false";
     return db.insert('tarefas', values);
+  });
+}
+
+Future<int> update(Tarefa tarefa){
+  return getDatabase().then((db){
+    Map<String, dynamic> values = Map();
+    values['nome'] = tarefa.nome;
+    values['checked'] = tarefa.checked;
+    return db.update('tarefas', values, where: "id = ?", whereArgs: [tarefa.id]);
   });
 }
 
@@ -31,7 +40,7 @@ Future<List<Tarefa>> findAll(){
         Tarefa tarefa = Tarefa(
           map['nome'] as String,
           id: map['id'] as int,
-          checked: map['checked'] as bool,
+          checked: map['checked'] == "true" ? true : false,
         );
         tarefas.add(tarefa);
       }
