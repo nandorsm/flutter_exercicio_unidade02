@@ -27,8 +27,8 @@ Future<int> update(Tarefa tarefa){
   return getDatabase().then((db){
     Map<String, dynamic> values = Map();
     values['nome'] = tarefa.nome;
-    values['checked'] = tarefa.checked;
-    return db.update('tarefas', values, where: "id = ?", whereArgs: [tarefa.id]);
+    values['checked'] = tarefa.checked == true ? "true" : "false";
+    return db.update('tarefas', values, where: "id = ?", whereArgs: [tarefa.id],);
   });
 }
 
@@ -49,4 +49,7 @@ Future<List<Tarefa>> findAll(){
   });
 }
 
-//teste
+Future<int> delete(int id) async {
+  Database db = await getDatabase();
+  return db.delete("tarefas", where: 'id = ?', whereArgs: [id]);
+}
